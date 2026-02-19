@@ -1,115 +1,138 @@
-# Revenue & Retention Analytics Platform (Snowflake + dbt + Power BI)
+# Revenue & Retention Analytics Platform
 
-## Objective
-Build a reliable analytics foundation to track **revenue**, **returns**, and **customer retention** from an e-commerce transactions dataset.
-This project simulates an end-to-end Analytics Engineering workflow:
-**ingestion → raw layer → data modeling (dbt) → business-ready metrics → dashboards (Power BI).**
+Snowflake · SQL · dbt · Power BI · Python
 
-## Stack
-- **Snowflake** (data warehouse)
-- **SQL** (profiling, validation, analytics)
-- **dbt** (data modeling, testing, documentation) *(next steps)*
-- **Power BI** (dashboards) *(next steps)*
-- **Python** (controlled data cleaning + reproducible ingestion)
+------------------------------------------------------------------------
 
-## Dataset
-**Online Retail** (UK-based e-commerce transactions), containing invoice lines with:
-- Invoice number, product code/description
-- Quantity, unit price
-- Invoice datetime
-- Customer ID (can be null)
-- Country
+# Project Overview
 
-## Repository Structure
-- `/docs`: progress notes, key decisions, screenshots
-- `/scripts`: python utilities (data cleaning/conversion)
-- `/sql`: profiling and validation queries
-- `/dbt`: dbt project (added later)
-- `/powerbi`: Power BI files/screenshots (added later)
+This project builds a production-style analytics foundation for
+measuring:
 
----
+-   Revenue performance\
+-   Returns impact\
+-   Customer retention\
+-   Geographic distribution\
+-   Operational vs accounting revenue
 
-# Day 1 — Warehouse Setup & Ingestion (Completed)
+The goal is to simulate a real Analytics Engineering workflow:
 
-## What was done
-- Created Snowflake account (trial)
-- Created database: `ANALYTICS_DB`
-- Created schemas: `RAW` and `ANALYTICS`
-- Loaded cleaned dataset into: `ANALYTICS_DB.RAW.ONLINE_RETAIL`
-- Validated row counts, date range, and sales/returns flags
+Ingestion → Raw Layer → Profiling → Governance Decisions → Modeling
+(dbt) → Business Metrics → BI Layer
 
-## Why cleaning was needed
-The original CSV ingestion via UI/CSV parsing was inconsistent and provided limited actionable error feedback.
-To make ingestion deterministic and reproducible, a Python-based cleaning step was adopted to:
-- Standardize datetime parsing (`InvoiceDate`)
-- Normalize encoding (export clean UTF-8)
-- Remove exact duplicates to avoid double counting
-- Preserve business-critical signals (sales vs returns)
+The dataset used is the Online Retail UK e-commerce transactions dataset
+(2010--2011).
 
-## RAW layer philosophy (important)
-The `RAW` schema is treated as the **closest representation of the source** with minimal enforcement of business rules.
-Example: `CustomerID` may be null (anonymous purchases). This is **acceptable in RAW**.
-Business rules (e.g., excluding null customers from retention metrics) will be applied in dbt models.
+------------------------------------------------------------------------
 
----
+# Key Findings (So Far)
 
-# Data Quality Summary (Day 1)
+## Dataset Scale
 
-## Load validation
-- Rows loaded: **534,129**
-- Date range: **2010-12-01 08:26:00 → 2011-12-09 12:50:00**
-- Sales rows (`IS_SALE=1`): **524,878**
-- Return rows (`IS_RETURN=1`): **9,251**
+-   534,129 rows loaded into Snowflake RAW layer
+-   Date range: 2010-12-01 → 2011-12-09
+-   23,796 distinct invoices
+-   4,371 identified customers
 
-## Cleaning outcomes (Python)
-- Invalid InvoiceDate rows dropped: **0**
-- Exact duplicates removed: **5,263**
-- Output exported rows: **534,129**
+## Customer Coverage
 
-## Notes about CustomerID
-- `CustomerID` may be null for anonymous transactions.
-- Revenue metrics may include all transactions.
-- Retention/cohort metrics will use **identified customers only** (`CustomerID not null`) in the modeling layer.
+-   24.82% of transactions are anonymous (CustomerID is null)
+-   Retention metrics will use only identified customers
+-   Revenue metrics may include all transactions
 
----
+## Revenue Validation
 
-# Metrics (Planned)
-These will be implemented in the analytics layer (dbt):
+-   Gross Revenue: 10,642,110.80
+-   Returns Value: 893,979.73
+-   Net Revenue: 9,748,131.07
 
-- **Gross Revenue** = sum(quantity * unit_price) where `IS_SALE=1`
-- **Returns Value** = sum(abs(quantity) * unit_price) where `IS_RETURN=1`
-- **Net Revenue** = Gross Revenue - Returns Value
-- **Orders** = count distinct invoice_no (valid)
-- **AOV** = Net Revenue / Orders
-- **Active Customers (Monthly)** = customers with ≥1 order in month
-- **Cohort Retention** = retained customers / cohort size (monthly)
+Returns represent \~8.4% of gross revenue, consistent with retail
+environments.
 
----
+## Accounting Adjustments Impact
 
-# Architecture (Planned)
-**Snowflake**
-- `ANALYTICS_DB.RAW`: source-aligned table(s)
-- `ANALYTICS_DB.ANALYTICS`: dbt models (staging, intermediate, marts)
+-   4,154 adjustment rows (\~0.78% of dataset)
+-   Adjustment value: -192,557.05
+-   Operational Net Revenue (excluding adjustments): 9,940,688.12
 
-**dbt layers (next)**
-- `stg_`: typed + standardized fields
-- `int_`: reusable business logic
-- `fct_` / `dim_`: star schema for reporting
-- cohort + customer-month facts for retention analysis
+Conclusion: accounting entries materially affect financial metrics and
+must be flagged rather than removed.
 
----
+## Geographic Distribution
 
-# How to run (Day 1)
-1. Clean source CSV with Python (`/scripts/convert_csv_clean.py`) to generate `online_retail_clean.csv`
-2. Upload the clean CSV to Snowflake stage (UI) and `COPY INTO` the RAW table
-3. Run validation queries (row counts, date range, sales/returns)
+Top 3 countries by Net Revenue: 1. United Kingdom -- 8,189,252.30 2.
+Netherlands -- 284,661.54 3. EIRE -- 262,993.38
 
-> Next steps will add dbt models + tests + Power BI dashboards.
+------------------------------------------------------------------------
 
----
+# Architecture
+
+## Snowflake Warehouse
+
+Database: ANALYTICS_DB
+
+Schemas: - RAW → source-aligned tables - ANALYTICS → modeled layer (dbt)
+
+RAW philosophy: - Preserve original data structure - Do not enforce
+business rules - Keep adjustments and anonymous transactions
+
+## Modeling Strategy (Next Phase)
+
+Planned dbt layers:
+
+-   stg\_ → typed and standardized fields
+-   int\_ → reusable business logic
+-   fct\_ → revenue, orders, customer-month facts
+-   dim\_ → customer and date dimensions
+
+Adjustments will be flagged using an IS_ADJUSTMENT rule in staging.
+
+------------------------------------------------------------------------
+
+# Data Quality & Governance Strategy
+
+Principles established during profiling:
+
+-   RAW must remain source-aligned
+-   Outliers must be measured before filtered
+-   Operational revenue must exclude accounting adjustments
+-   Anonymous customers must be handled explicitly in retention logic
+-   Financial transparency is prioritized over aggressive cleaning
+
+------------------------------------------------------------------------
 
 # Roadmap
-- [ ] Day 2: data profiling + first revenue sanity checks (SQL)
-- [ ] Day 3–14: dbt project (staging → marts, tests, docs)
-- [ ] Day 15–20: Power BI dashboards (Executive + Analytical)
-- [ ] Day 21–30: polishing portfolio + interview script + applications
+
+Completed: - Warehouse setup (Snowflake) - RAW ingestion pipeline
+(Python + COPY) - Data profiling and revenue validation - Adjustment
+impact analysis - Governance strategy definition
+
+Next Steps: - Implement staging logic in dbt - Define valid_transaction
+rule - Build revenue & retention marts - Create executive dashboard
+(Power BI) - Add data tests and documentation (dbt docs)
+
+------------------------------------------------------------------------
+
+# Technical Stack
+
+-   Snowflake (Cloud Data Warehouse)
+-   SQL (profiling and analytics)
+-   Python (controlled ingestion and cleaning)
+-   dbt (data transformation & testing -- upcoming)
+-   Power BI (visualization -- upcoming)
+
+------------------------------------------------------------------------
+
+# Why This Project Matters
+
+This project demonstrates:
+
+-   End-to-end data pipeline thinking
+-   Financial metric validation
+-   Real-world anomaly handling
+-   Governance-aware modeling decisions
+-   Ability to distinguish operational vs accounting data
+-   Engineering maturity beyond simple data cleaning
+
+The focus is not just on writing SQL --- but on designing reliable
+analytical systems.
