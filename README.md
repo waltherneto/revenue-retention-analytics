@@ -17,27 +17,26 @@ measuring:
 
 The goal is to simulate a real Analytics Engineering workflow:
 
-Ingestion → Raw Layer → Profiling → Governance Decisions → Modeling
-(dbt) → Business Metrics → BI Layer
+Ingestion → RAW → STG → Marts (dbt) → BI Layer
 
 The dataset used is the Online Retail UK e-commerce transactions dataset
 (2010--2011).
 
 ------------------------------------------------------------------------
 
-# Key Findings (So Far)
+# Key Findings
 
 ## Dataset Scale
 
--   534,129 rows loaded into Snowflake RAW layer
+-   534,129 rows loaded
 -   Date range: 2010-12-01 → 2011-12-09
 -   23,796 distinct invoices
 -   4,371 identified customers
 
 ## Customer Coverage
 
--   24.82% of transactions are anonymous (CustomerID is null)
--   Retention metrics will use only identified customers
+-   24.82% of transactions are anonymous
+-   Retention metrics exclude anonymous customers
 -   Revenue metrics may include all transactions
 
 ## Revenue Validation
@@ -46,80 +45,76 @@ The dataset used is the Online Retail UK e-commerce transactions dataset
 -   Returns Value: 893,979.73
 -   Net Revenue: 9,748,131.07
 
-Returns represent \~8.4% of gross revenue, consistent with retail
-environments.
+## Accounting Adjustment Impact
 
-## Accounting Adjustments Impact
-
--   4,154 adjustment rows (\~0.78% of dataset)
+-   4,154 adjustment rows (\~0.78%)
 -   Adjustment value: -192,557.05
--   Operational Net Revenue (excluding adjustments): 9,940,688.12
 
-Conclusion: accounting entries materially affect financial metrics and
-must be flagged rather than removed.
+## Operational Revenue (Staging Logic Applied)
 
-## Geographic Distribution
+-   Gross Revenue (Operational): 10,205,339.10
+-   Returns Value (Operational): 264,650.98
+-   Net Revenue (Operational): 9,940,688.12
 
-Top 3 countries by Net Revenue: 1. United Kingdom -- 8,189,252.30 2.
-Netherlands -- 284,661.54 3. EIRE -- 262,993.38
+Operational revenue excludes accounting adjustments and extreme
+anomalies through governance guardrails.
 
 ------------------------------------------------------------------------
 
 # Architecture
 
-## Snowflake Warehouse
-
 Database: ANALYTICS_DB
 
-Schemas: - RAW → source-aligned tables - ANALYTICS → modeled layer (dbt)
+Schemas:
 
-RAW philosophy: - Preserve original data structure - Do not enforce
-business rules - Keep adjustments and anonymous transactions
+-   RAW → Source-aligned ingestion layer
+-   ANALYTICS → Staging & modeling layer
 
-## Modeling Strategy (Next Phase)
+Layer Responsibilities:
 
-Planned dbt layers:
+RAW\
+- Immutable - Audit-safe - No business rules applied
 
--   stg\_ → typed and standardized fields
--   int\_ → reusable business logic
--   fct\_ → revenue, orders, customer-month facts
--   dim\_ → customer and date dimensions
+STG (View: STG_ONLINE_RETAIL)\
+- Adds LINE_AMOUNT, SALE_VALUE, RETURN_VALUE - Introduces IS_ADJUSTMENT
+flag - Introduces IS_VALID_TRANSACTION guardrails - Separates
+operational vs accounting revenue
 
-Adjustments will be flagged using an IS_ADJUSTMENT rule in staging.
+MARTS (Upcoming via dbt)\
+- Revenue fact tables - Customer retention metrics - Monthly and country
+aggregates
 
 ------------------------------------------------------------------------
 
-# Data Quality & Governance Strategy
+# Governance Principles
 
-Principles established during profiling:
-
--   RAW must remain source-aligned
--   Outliers must be measured before filtered
--   Operational revenue must exclude accounting adjustments
--   Anonymous customers must be handled explicitly in retention logic
--   Financial transparency is prioritized over aggressive cleaning
+-   Preserve source integrity in RAW
+-   Flag anomalies instead of deleting
+-   Separate operational and accounting effects
+-   Use guardrails for extreme values
+-   Design transformations dbt-ready
 
 ------------------------------------------------------------------------
 
 # Roadmap
 
-Completed: - Warehouse setup (Snowflake) - RAW ingestion pipeline
-(Python + COPY) - Data profiling and revenue validation - Adjustment
-impact analysis - Governance strategy definition
+Completed: - Snowflake warehouse setup - RAW ingestion pipeline - Data
+profiling & revenue validation - Adjustment impact analysis - Staging
+layer implementation - Operational revenue formalization
 
-Next Steps: - Implement staging logic in dbt - Define valid_transaction
-rule - Build revenue & retention marts - Create executive dashboard
-(Power BI) - Add data tests and documentation (dbt docs)
+Next: - Bootstrap dbt project - Implement staging models in dbt - Create
+revenue & retention marts - Add automated data tests - Build executive
+dashboard
 
 ------------------------------------------------------------------------
 
 # Technical Stack
 
--   Snowflake (Cloud Data Warehouse)
--   SQL (profiling and analytics)
--   Python (controlled ingestion and cleaning)
--   dbt (data transformation & testing -- upcoming)
--   Power BI (visualization -- upcoming)
+-   Snowflake
+-   SQL
+-   Python
+-   dbt (next phase)
+-   Power BI (next phase)
 
 ------------------------------------------------------------------------
 
@@ -127,12 +122,11 @@ rule - Build revenue & retention marts - Create executive dashboard
 
 This project demonstrates:
 
--   End-to-end data pipeline thinking
+-   End-to-end analytics engineering thinking
 -   Financial metric validation
--   Real-world anomaly handling
--   Governance-aware modeling decisions
--   Ability to distinguish operational vs accounting data
--   Engineering maturity beyond simple data cleaning
+-   Governance-aware modeling
+-   Operational vs accounting separation
+-   Reproducible layered architecture
 
-The focus is not just on writing SQL --- but on designing reliable
-analytical systems.
+It reflects production-style analytical system design --- not just SQL
+querying.
