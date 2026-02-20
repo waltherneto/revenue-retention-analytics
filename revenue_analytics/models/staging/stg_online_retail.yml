@@ -1,0 +1,36 @@
+# [DBT-D4-013]
+version: 2
+
+models:
+  - name: stg_online_retail
+    description: "Staging model for Online Retail transactions. Standardizes types and creates derived columns for analytics."
+    columns:
+      - name: invoice_no
+        tests: [not_null]
+      - name: stock_code
+        tests: [not_null]
+      - name: invoice_date
+        tests: [not_null]
+      - name: quantity
+        tests: [not_null]
+      - name: unit_price
+        tests: [not_null]
+
+      - name: is_sale
+        tests:
+          - accepted_values:
+              values: [0, 1]
+
+      - name: is_return
+        tests:
+          - accepted_values:
+              values: [0, 1]
+
+      - name: is_adjustment
+        tests:
+          - accepted_values:
+              values: [0, 1]
+
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "unit_price >= 0"
