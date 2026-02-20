@@ -4,6 +4,24 @@ All notable changes to this project are documented here.
 
 ------------------------------------------------------------------------
 
+## [v0.5.0] - Incremental MERGE & Production Hardening
+
+### Added
+
+- Converted fct_invoice_lines to incremental MERGE model
+- Implemented deterministic surrogate key (MD5)
+- Enforced unique_key strategy in dbt
+- Validated idempotent re-execution behavior
+- Documented performance trade-offs and scaling considerations
+
+### Architecture
+
+- Transitioned from full rebuild to incremental ingestion
+- Improved scalability and cost efficiency
+- Hardened transactional fact layer for production scenarios
+
+------------------------------------------------------------------------
+
 ## [v0.4.0] - Dimensional Modeling & Finance Mart
 
 ### Added
@@ -14,13 +32,6 @@ All notable changes to this project are documented here.
 - Configured dbt DAG with explicit dependencies
 - Generated dbt lineage documentation
 - Validated financial reconciliation at mart layer
-
-### Architecture
-
-- Introduced dimensional modeling layer
-- Formalized grain definition
-- Separated transactional and aggregated marts
-- Established production-ready transformation pipeline
 
 ------------------------------------------------------------------------
 

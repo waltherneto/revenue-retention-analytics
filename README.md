@@ -1,6 +1,6 @@
 # Revenue & Retention Analytics Platform
 
-Snowflake · SQL · dbt · Python · Dimensional Modeling
+Snowflake · SQL · dbt · Python · Dimensional Modeling · Incremental Processing
 
 ---
 
@@ -16,7 +16,7 @@ This project builds a production-style analytics warehouse to measure:
 
 It simulates a real-world Analytics Engineering workflow:
 
-Ingestion → RAW → STG → Dimensional Models → Finance Mart → BI Layer  
+Ingestion → RAW → STG → Dimensional Models → Incremental Fact Layer → Finance Mart  
 
 Dataset: Online Retail UK (2010–2011)
 
@@ -48,24 +48,26 @@ DIMENSIONS
 - dim_customer  
 - dim_product  
 
-FACT TABLE  
-- fct_invoice_lines (transaction grain)
+FACT TABLE (Incremental MERGE)  
+- fct_invoice_lines (transaction grain, surrogate key, idempotent)
 
 AGGREGATED MART  
 - fct_revenue_monthly (monthly finance mart)
 
 ---
 
-# Dimensional Model (dbt Lineage)
+# Step 5 — Production-Grade Incremental Modeling
 
-The project follows a layered transformation structure:
+The transactional fact table was upgraded to a Snowflake MERGE-based incremental model using:
 
-raw.ONLINE_RETAIL  
-→ stg_online_retail  
-→ dim_customer / dim_product / fct_invoice_lines  
-→ fct_revenue_monthly  
+- Deterministic surrogate key (MD5 hash)
+- Unique key enforcement
+- Idempotent execution validation
+- Cost-aware incremental strategy
 
-(Lineage screenshot available in docs/day-04)
+This ensures scalability and production readiness.
+
+(Full documentation available in docs/Step-05)
 
 ---
 
@@ -82,13 +84,14 @@ All metrics are computed through reproducible dbt models.
 
 ---
 
-# Governance Principles
+# Governance & Engineering Principles
 
 - Preserve source integrity in RAW  
 - Separate operational and accounting effects  
 - Model transformations explicitly  
 - Enforce grain clarity  
-- Build reproducible DAGs  
+- Build idempotent pipelines  
+- Design for scalability and cost efficiency  
 
 ---
 
@@ -97,7 +100,7 @@ All metrics are computed through reproducible dbt models.
 - Snowflake  
 - SQL  
 - Python  
-- dbt (Dimensional modeling & DAG management)  
+- dbt (DAG orchestration & modeling)  
 
 ---
 
@@ -106,18 +109,18 @@ All metrics are computed through reproducible dbt models.
 Completed:
 
 - Snowflake warehouse setup  
-- Clean RAW ingestion  
-- Data profiling & revenue validation  
+- RAW ingestion  
+- Data profiling & validation  
 - Staging governance logic  
 - Dimensional modeling (star schema)  
 - Finance mart aggregation  
-- dbt lineage documentation  
+- Incremental MERGE hardening (production-grade)
 
 Next:
 
-- Incremental modeling (production-grade)  
 - Advanced testing & constraints  
-- Performance optimization  
+- Partition-based performance optimization  
+- Incremental finance mart  
 - BI exposure layer  
 
 ---
@@ -128,9 +131,9 @@ This project demonstrates:
 
 - Layered warehouse architecture  
 - Dimensional modeling (Kimball-style)  
-- Revenue metric engineering  
-- dbt dependency management  
-- Governance-aware transformations  
-- Production-style analytical thinking  
+- Snowflake incremental MERGE strategy  
+- Idempotent data engineering pipelines  
+- Performance-aware warehouse design  
+- Production-level analytics engineering  
 
-It reflects an Analytics Engineering mindset — not just SQL querying.
+It reflects real-world Data Engineering thinking — not just SQL querying.

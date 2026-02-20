@@ -1,4 +1,4 @@
-# Day 1 — Ingestion Notes
+# Step 1 — Ingestion Notes
 
 ## Problem
 CSV ingestion showed limited actionable error feedback and inconsistent parsing.

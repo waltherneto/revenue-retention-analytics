@@ -1,8 +1,8 @@
-# Day 2 — Data Profiling & Revenue Validation
+# Step 2 — Data Profiling & Revenue Validation
 
 ## Objective
 
-The goal of Day 2 was to:
+The goal of Step 2 was to:
 
 -   Perform structured data profiling on the RAW layer\
 -   Measure customer identification coverage\
@@ -191,7 +191,7 @@ This approach prevents metric distortion while maintaining traceability.
 
 ------------------------------------------------------------------------
 
-## Architectural Maturity Gained (Day 2)
+## Architectural Maturity Gained (Step 2)
 
 This stage clarified several critical engineering principles:
 
@@ -207,7 +207,7 @@ This stage clarified several critical engineering principles:
 
 ## Next Step
 
-Day 3 will formalize:
+Step 3 will formalize:
 
 -   Adjustment logic in the staging layer\
 -   A valid transaction definition aligned with business metrics\

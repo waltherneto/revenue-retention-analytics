@@ -1,4 +1,4 @@
-# Day 4 — Dimensional Modeling & Revenue Mart
+# Step 4 — Dimensional Modeling & Revenue Mart
 
 ## Objective
 
@@ -134,4 +134,4 @@ dbt docs serve
 - Documentation generated
 - Lineage graph verified
 
-Next step: Production-grade incremental modeling (Day 5).
+Next step: Production-grade incremental modeling (Step 5).

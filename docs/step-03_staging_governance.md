@@ -1,8 +1,8 @@
-# Day 3 — Staging Layer & Governance Logic
+#  3 — Staging Layer & Governance Logic
 
 ## Objective
 
-The goal of Day 3 was to introduce a structured staging layer on top of
+The goal of Step 3 was to introduce a structured staging layer on top of
 RAW data and formalize governance rules for operational revenue metrics.
 
 This marks the transition from raw ingestion to analytical engineering
@@ -12,7 +12,7 @@ design.
 
 # Architectural Evolution
 
-By the end of Day 3, the architecture now includes:
+By the end of Step 3, the architecture now includes:
 
 RAW → Source-aligned data\
 STG → Technical normalization and governance flags\
@@ -89,7 +89,7 @@ Comparison with previous net revenue:
 Net Revenue (Including Adjustments): 9,748,131.07\
 Difference: \~192,557.05
 
-This difference matches the accounting adjustment impact measured on Day
+This difference matches the accounting adjustment impact measured on Step
 2.
 
 ------------------------------------------------------------------------
@@ -114,9 +114,9 @@ This difference matches the accounting adjustment impact measured on Day
 
 ------------------------------------------------------------------------
 
-# Next Step
+# Next 
 
-Day 4 will introduce dbt to formalize:
+Step 4 will introduce dbt to formalize:
 
 -   stg models
 -   reusable intermediate models
