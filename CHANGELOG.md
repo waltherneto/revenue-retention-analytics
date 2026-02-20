@@ -4,6 +4,26 @@ All notable changes to this project are documented here.
 
 ------------------------------------------------------------------------
 
+## [v0.6.0] - Advanced Testing & Data Quality Hardening
+
+### Added
+
+- Implemented advanced dbt data tests at mart layer
+- Enforced surrogate key uniqueness validation on fct_invoice_lines
+- Added referential integrity tests (fact → dimensions)
+- Introduced business-rule expression tests (quantity, price, revenue logic)
+- Detected and resolved surrogate key collisions using deterministic row_number disambiguation
+- Validated full-refresh rebuild after surrogate key change
+
+### Engineering Improvements
+
+- Elevated warehouse from "modeled" to "contract-tested"
+- Hardened fact-layer uniqueness under incremental MERGE strategy
+- Increased reliability through automated data-quality enforcement
+- Improved production-readiness posture
+
+------------------------------------------------------------------------
+
 ## [v0.5.0] - Incremental MERGE & Production Hardening
 
 ### Added

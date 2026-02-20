@@ -84,6 +84,25 @@ All metrics are computed through reproducible dbt models.
 
 ---
 
+# Step 6 — Advanced Testing & Data Quality
+
+The warehouse was upgraded with production-grade automated testing using dbt.
+
+Enhancements include:
+
+- Surrogate key uniqueness enforcement
+- Referential integrity between fact and dimension tables
+- Business-rule consistency tests
+- Deterministic duplicate disambiguation strategy
+- Full-refresh rebuild validation after key change
+
+A real-world issue was detected:
+duplicate surrogate key collisions due to lack of native line identifiers.
+
+This was resolved using grain-aware row_number disambiguation inside the fact model.
+
+(Full documentation available in docs/Step-06)
+
 # Governance & Engineering Principles
 
 - Preserve source integrity in RAW  
@@ -115,12 +134,13 @@ Completed:
 - Dimensional modeling (star schema)  
 - Finance mart aggregation  
 - Incremental MERGE hardening (production-grade)
+- Advanced testing & data-quality enforcement  
 
 Next:
 
-- Advanced testing & constraints  
 - Partition-based performance optimization  
-- Incremental finance mart  
+- Incremental finance mart hardening  
+- Data freshness monitoring  
 - BI exposure layer  
 
 ---

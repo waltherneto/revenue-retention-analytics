@@ -1,0 +1,83 @@
+# [DBT-S6-007]
+version: 2
+
+models:
+  - name: dim_customer
+    description: "Customer dimension (deduplicated)."
+    columns:
+      - name: customer_id
+        description: "Natural customer identifier from the source system."
+        tests: [not_null, unique]
+
+  - name: dim_product
+    description: "Product dimension (deduplicated)."
+    columns:
+      - name: stock_code
+        description: "Product stock code."
+        tests: [not_null, unique]
+
+  - name: fct_invoice_lines
+    description: "Transactional fact table at invoice line grain. Incremental MERGE model."
+    columns:
+      - name: invoice_line_sk
+        description: "Deterministic surrogate key for invoice line (MD5 hash)."
+        tests: [not_null, unique]
+
+      - name: customer_id
+        description: "Customer identifier (nullable in source)."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_id
+              where: "customer_id is not null"
+
+      - name: stock_code
+        description: "Product identifier."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_product')
+                field: stock_code
+              where: "stock_code is not null"
+
+      - name: invoice_date
+        description: "Invoice timestamp."
+        tests: [not_null]
+
+    tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "unit_price >= 0"
+
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "quantity <> 0"
+
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "not (is_sale = 1 and is_return = 1)"
+
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "invoice_date >= '2010-12-01'::timestamp_ntz and invoice_date < '2012-01-01'::timestamp_ntz"
+
+  - name: fct_revenue_monthly
+    description: "Monthly finance mart aggregated from invoice lines."
+    columns:
+      - name: invoice_month
+        description: "First day of the month (DATE_TRUNC month)."
+        tests: [not_null, unique]
+
+    tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "gross_revenue >= 0"
+
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "returns_value >= 0"
+
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "net_revenue = gross_revenue - returns_value"
