@@ -1,75 +1,67 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-The format is based on Keep a Changelog and this project follows Semantic Versioning.
-
----
-
-## v0.8.0 — CI/CD with GitHub Actions
+## v0.9.0 — Environment Separation
 
 ### Added
-- GitHub Actions workflow to run dbt in CI (`.github/workflows/dbt-ci.yml`)
-- Dependency pinning for CI via `requirements.txt`
-- Documentation for CI setup, Secrets, and validation (Step 8)
+- DEV and PROD Snowflake databases
+- Multi-target dbt configuration (dev/prod)
+- CI-aware target selection (PR → DEV, main → PROD)
+- Environment-specific GitHub Secrets
 
 ### Notes
-- CI generates `profiles.yml` at runtime from GitHub Secrets (no credentials committed)
+- This upgrade transitions the project to production-aware deployment standards.
 
 ---
 
-## v0.7.0 — Data freshness, observability & reconciliation
+## v0.8.0 — CI/CD Automation
 
-### Added
-- Source freshness configuration and checks (`dbt source freshness`)
-- Observability models for daily/ monthly monitoring
-- Monthly revenue reconciliation controls
-
----
-
-## v0.6.0 — Advanced testing & data quality
-
-### Added
-- Extended dbt tests across marts (unique, not_null, relationships)
-- Custom assertions using dbt_utils (expression_is_true)
-- Documentation focused on mid-level DE interview talking points
+- GitHub Actions workflow for dbt validation
+- Secure profiles.yml generation
+- Automated dbt debug/run/test
 
 ---
 
-## v0.5.0 — Production-grade incremental modeling
+## v0.7.0 — Freshness & Observability
 
-### Added
-- Incremental strategy for `fct_invoice_lines` (production pattern)
-- Partition-friendly model structure and validations
-
----
-
-## v0.4.0 — Dimensional modeling
-
-### Added
-- Staging layer (`stg_online_retail`)
-- Dimensional marts (`dim_customer`, `dim_product`)
-- Fact tables (`fct_invoice_lines`, `fct_revenue_monthly`)
-- dbt docs lineage validation
+- Source freshness configuration
+- Observability models
+- Revenue reconciliation checks
 
 ---
 
-## v0.3.0 — Staging validation
+## v0.6.0 — Advanced Testing
 
-### Added
-- Staging-level validation queries and consistency checks
-
----
-
-## v0.2.0 — Data profiling & revenue validation
-
-### Added
-- Profiling queries for customer coverage, invoices, and revenue validation
+- Extended dbt test coverage
+- Custom assertion logic
 
 ---
 
-## v0.1.0 — Initial setup
+## v0.5.0 — Incremental Modeling
 
-### Added
-- Snowflake account setup and database/schema creation
-- RAW ingestion of Online Retail dataset
+- Production-style incremental fact model
+
+---
+
+## v0.4.0 — Dimensional Modeling
+
+- Staging layer
+- Fact & dimension models
+
+---
+
+## v0.3.0 — Staging Validation
+
+- Data standardization and validation
+
+---
+
+## v0.2.0 — Data Profiling
+
+- Revenue validation and customer coverage analysis
+
+---
+
+## v0.1.0 — Initial Setup
+
+- Snowflake account setup
+- RAW ingestion
