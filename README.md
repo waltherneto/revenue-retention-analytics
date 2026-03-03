@@ -1,6 +1,6 @@
 # Revenue & Retention Analytics Platform
 
-Snowflake · SQL · dbt · Python · Dimensional Modeling · Incremental Processing
+Snowflake · SQL · dbt · Python · Dimensional Modeling · Incremental Processing · Data Reliability
 
 ---
 
@@ -16,7 +16,7 @@ This project builds a production-style analytics warehouse to measure:
 
 It simulates a real-world Analytics Engineering workflow:
 
-Ingestion → RAW → STG → Dimensional Models → Incremental Fact Layer → Finance Mart  
+Ingestion → RAW → STG → DIM → FACT → MART → Reliability Controls  
 
 Dataset: Online Retail UK (2010–2011)
 
@@ -54,6 +54,10 @@ FACT TABLE (Incremental MERGE)
 AGGREGATED MART  
 - fct_revenue_monthly (monthly finance mart)
 
+OBSERVABILITY LAYER  
+- obs_daily_volume_and_revenue  
+- obs_monthly_revenue_reconciliation  
+
 ---
 
 # Step 5 — Production-Grade Incremental Modeling
@@ -68,19 +72,6 @@ The transactional fact table was upgraded to a Snowflake MERGE-based incremental
 This ensures scalability and production readiness.
 
 (Full documentation available in docs/Step-05)
-
----
-
-# Financial Metrics (Mart Layer)
-
-Validated from fct_revenue_monthly:
-
-- Gross Revenue: 10,539,534.83  
-- Returns Value: 511,913.68  
-- Net Revenue: 10,027,621.15  
-- Operational Net Revenue: 9,748,131.07  
-
-All metrics are computed through reproducible dbt models.
 
 ---
 
@@ -103,6 +94,38 @@ This was resolved using grain-aware row_number disambiguation inside the fact mo
 
 (Full documentation available in docs/Step-06)
 
+---
+
+# Step 7 — Data Freshness, Observability & Reconciliation
+
+The warehouse was elevated from modeled to monitored by introducing reliability controls.
+
+Enhancements include:
+
+- Source SLA simulation using dbt source freshness
+- Daily drift detection (row count & revenue change monitoring)
+- Automated financial reconciliation between fact and mart layers
+- Observability-focused monitoring models
+
+This introduces production-style reliability engineering practices into the analytics layer.
+
+(Full documentation available in docs/Step-07)
+
+---
+
+# Financial Metrics (Mart Layer)
+
+Validated from fct_revenue_monthly:
+
+- Gross Revenue: 10,539,534.83  
+- Returns Value: 511,913.68  
+- Net Revenue: 10,027,621.15  
+- Operational Net Revenue: 9,748,131.07  
+
+All metrics are computed through reproducible dbt models.
+
+---
+
 # Governance & Engineering Principles
 
 - Preserve source integrity in RAW  
@@ -111,6 +134,8 @@ This was resolved using grain-aware row_number disambiguation inside the fact mo
 - Enforce grain clarity  
 - Build idempotent pipelines  
 - Design for scalability and cost efficiency  
+- Monitor freshness & reliability metrics  
+- Implement reconciliation-based control checks  
 
 ---
 
@@ -120,6 +145,7 @@ This was resolved using grain-aware row_number disambiguation inside the fact mo
 - SQL  
 - Python  
 - dbt (DAG orchestration & modeling)  
+- Git versioning  
 
 ---
 
@@ -135,12 +161,14 @@ Completed:
 - Finance mart aggregation  
 - Incremental MERGE hardening (production-grade)
 - Advanced testing & data-quality enforcement  
+- Freshness monitoring & observability layer  
 
 Next:
 
+- CI/CD automation (dbt + GitHub Actions)  
+- Environment separation (dev/prod targets)  
 - Partition-based performance optimization  
-- Incremental finance mart hardening  
-- Data freshness monitoring  
+- Cost-aware warehouse tuning  
 - BI exposure layer  
 
 ---
@@ -153,7 +181,8 @@ This project demonstrates:
 - Dimensional modeling (Kimball-style)  
 - Snowflake incremental MERGE strategy  
 - Idempotent data engineering pipelines  
-- Performance-aware warehouse design  
-- Production-level analytics engineering  
+- Automated data-quality enforcement  
+- SLA configuration & observability design  
+- Financial reconciliation controls  
 
-It reflects real-world Data Engineering thinking — not just SQL querying.
+It reflects real-world Data Engineering maturity — beyond transformation logic.
