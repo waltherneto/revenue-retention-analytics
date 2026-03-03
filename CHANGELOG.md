@@ -1,91 +1,75 @@
 # Changelog
 
-All notable changes to this project are documented here.
+All notable changes to this project will be documented in this file.
 
-------------------------------------------------------------------------
+The format is based on Keep a Changelog and this project follows Semantic Versioning.
 
-## [v0.6.0] - Advanced Testing & Data Quality Hardening
+---
 
-### Added
-
-- Implemented advanced dbt data tests at mart layer
-- Enforced surrogate key uniqueness validation on fct_invoice_lines
-- Added referential integrity tests (fact → dimensions)
-- Introduced business-rule expression tests (quantity, price, revenue logic)
-- Detected and resolved surrogate key collisions using deterministic row_number disambiguation
-- Validated full-refresh rebuild after surrogate key change
-
-### Engineering Improvements
-
-- Elevated warehouse from "modeled" to "contract-tested"
-- Hardened fact-layer uniqueness under incremental MERGE strategy
-- Increased reliability through automated data-quality enforcement
-- Improved production-readiness posture
-
-------------------------------------------------------------------------
-
-## [v0.5.0] - Incremental MERGE & Production Hardening
+## v0.8.0 — CI/CD with GitHub Actions
 
 ### Added
+- GitHub Actions workflow to run dbt in CI (`.github/workflows/dbt-ci.yml`)
+- Dependency pinning for CI via `requirements.txt`
+- Documentation for CI setup, Secrets, and validation (Step 8)
 
-- Converted fct_invoice_lines to incremental MERGE model
-- Implemented deterministic surrogate key (MD5)
-- Enforced unique_key strategy in dbt
-- Validated idempotent re-execution behavior
-- Documented performance trade-offs and scaling considerations
+### Notes
+- CI generates `profiles.yml` at runtime from GitHub Secrets (no credentials committed)
 
-### Architecture
+---
 
-- Transitioned from full rebuild to incremental ingestion
-- Improved scalability and cost efficiency
-- Hardened transactional fact layer for production scenarios
-
-------------------------------------------------------------------------
-
-## [v0.4.0] - Dimensional Modeling & Finance Mart
+## v0.7.0 — Data freshness, observability & reconciliation
 
 ### Added
+- Source freshness configuration and checks (`dbt source freshness`)
+- Observability models for daily/ monthly monitoring
+- Monthly revenue reconciliation controls
 
-- Implemented star schema (dim_customer, dim_product)
-- Created transaction-level fact table (fct_invoice_lines)
-- Created monthly aggregated finance mart (fct_revenue_monthly)
-- Configured dbt DAG with explicit dependencies
-- Generated dbt lineage documentation
-- Validated financial reconciliation at mart layer
+---
 
-------------------------------------------------------------------------
-
-## [v0.3.0] - Staging Layer & Governance Implementation
+## v0.6.0 — Advanced testing & data quality
 
 ### Added
+- Extended dbt tests across marts (unique, not_null, relationships)
+- Custom assertions using dbt_utils (expression_is_true)
+- Documentation focused on mid-level DE interview talking points
 
-- Created STG_ONLINE_RETAIL view
-- Introduced IS_ADJUSTMENT flag
-- Introduced IS_VALID_TRANSACTION guardrail logic
-- Defined operational revenue calculation
-- Implemented anomaly guardrails for extreme values
-- Validated reconciliation between raw and operational revenue
+---
 
-------------------------------------------------------------------------
-
-## [v0.2.0] - Data Profiling & Revenue Validation
+## v0.5.0 — Production-grade incremental modeling
 
 ### Added
+- Incremental strategy for `fct_invoice_lines` (production pattern)
+- Partition-friendly model structure and validations
 
-- Customer coverage analysis
-- Revenue sanity validation (Gross, Returns, Net)
-- Accounting adjustment impact measurement
-- Geographic revenue distribution
-- Monthly revenue trend validation
-- Governance strategy definition
+---
 
-------------------------------------------------------------------------
-
-## [v0.1.0] - Warehouse Setup & Raw Ingestion
+## v0.4.0 — Dimensional modeling
 
 ### Added
+- Staging layer (`stg_online_retail`)
+- Dimensional marts (`dim_customer`, `dim_product`)
+- Fact tables (`fct_invoice_lines`, `fct_revenue_monthly`)
+- dbt docs lineage validation
 
-- Snowflake warehouse configuration
-- Database and schema creation
-- Clean CSV ingestion pipeline
-- Initial data validation checks
+---
+
+## v0.3.0 — Staging validation
+
+### Added
+- Staging-level validation queries and consistency checks
+
+---
+
+## v0.2.0 — Data profiling & revenue validation
+
+### Added
+- Profiling queries for customer coverage, invoices, and revenue validation
+
+---
+
+## v0.1.0 — Initial setup
+
+### Added
+- Snowflake account setup and database/schema creation
+- RAW ingestion of Online Retail dataset
