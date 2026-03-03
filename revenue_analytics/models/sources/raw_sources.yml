@@ -6,4 +6,8 @@ sources:
     schema: RAW
     tables:
       - name: ONLINE_RETAIL
-        description: "Raw Online Retail transactions loaded into Snowflake (no business rules applied)."
+        description: "Raw Online Retail dataset loaded into Snowflake."
+        loaded_at_field: INVOICE_DATE
+        freshness:
+          warn_after: {count: 3650, period: day}
+          error_after: {count: 7300, period: day}
