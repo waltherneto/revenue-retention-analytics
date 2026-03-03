@@ -24,25 +24,47 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # 🔐 Create profiles.yml with dev and prod
       - name: Create dbt profiles.yml
         run: |
           mkdir -p ~/.dbt
           cat > ~/.dbt/profiles.yml << 'EOF'
           revenue_analytics:
-            target: ci
+            target: dev
             outputs:
-              ci:
+              dev:
                 type: snowflake
                 account: "${{ secrets.SNOWFLAKE_ACCOUNT }}"
                 user: "${{ secrets.SNOWFLAKE_USER }}"
                 password: "${{ secrets.SNOWFLAKE_PASSWORD }}"
                 role: "${{ secrets.SNOWFLAKE_ROLE }}"
-                database: "${{ secrets.SNOWFLAKE_DATABASE }}"
+                database: "${{ secrets.SNOWFLAKE_DATABASE_DEV }}"
+                warehouse: "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
+                schema: "${{ secrets.SNOWFLAKE_SCHEMA }}"
+                threads: 4
+                client_session_keep_alive: false
+
+              prod:
+                type: snowflake
+                account: "${{ secrets.SNOWFLAKE_ACCOUNT }}"
+                user: "${{ secrets.SNOWFLAKE_USER }}"
+                password: "${{ secrets.SNOWFLAKE_PASSWORD }}"
+                role: "${{ secrets.SNOWFLAKE_ROLE }}"
+                database: "${{ secrets.SNOWFLAKE_DATABASE_PROD }}"
                 warehouse: "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
                 schema: "${{ secrets.SNOWFLAKE_SCHEMA }}"
                 threads: 4
                 client_session_keep_alive: false
           EOF
+
+      # 🎯 Select target dynamically
+      - name: Select dbt target
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "DBT_TARGET=dev" >> $GITHUB_ENV
+          else
+            echo "DBT_TARGET=prod" >> $GITHUB_ENV
+          fi
 
       - name: dbt deps
         working-directory: revenue_analytics
@@ -50,16 +72,16 @@ jobs:
 
       - name: dbt debug
         working-directory: revenue_analytics
-        run: dbt debug --target ci
+        run: dbt debug --target $DBT_TARGET
 
       - name: dbt compile
         working-directory: revenue_analytics
-        run: dbt compile --target ci
+        run: dbt compile --target $DBT_TARGET
 
       - name: dbt run
         working-directory: revenue_analytics
-        run: dbt run --target ci
+        run: dbt run --target $DBT_TARGET
 
       - name: dbt test
         working-directory: revenue_analytics
-        run: dbt test --target ci
+        run: dbt test --target $DBT_TARGET
