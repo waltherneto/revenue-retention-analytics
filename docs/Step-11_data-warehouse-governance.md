@@ -51,10 +51,6 @@ Governance metadata was standardized in YAML using config.meta:
 - grain
 - slo
 
-Interview talking point:
-
-> I treat core marts as governed products. I document ownership, grain, and criticality, and enforce contracts on core facts to prevent schema drift.
-
 ---
 
 # 11.C — Exposures (Consumers of the Warehouse)

@@ -53,12 +53,6 @@ Required secrets (example names):
 - `SNOWFLAKE_DATABASE` (e.g., `ANALYTICS_DB`)
 - `SNOWFLAKE_SCHEMA` (e.g., `ANALYTICS`)
 
-Interview talking points:
-
-- “I used GitHub Secrets to enforce credential isolation.”
-- “The workflow generates `profiles.yml` at runtime, preventing accidental leakage.”
-- “This pattern mirrors real-world CI/CD for dbt deployments.”
-
 Screenshot:
 
 ![GitHub Secrets](https://raw.githubusercontent.com/waltherneto/revenue-retention-analytics/main/docs/screenshots/step-8_github-secrets.jpg)
@@ -73,11 +67,6 @@ A `requirements.txt` file was introduced to pin runtime dependencies used by CI,
 
 - `dbt-core`
 - `dbt-snowflake`
-
-Interview talking points:
-
-- “Pinning dependencies reduces drift between local and CI environments.”
-- “It also improves reproducibility for reviewers and future maintainers.”
 
 ---
 

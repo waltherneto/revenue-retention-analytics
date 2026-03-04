@@ -46,12 +46,6 @@ A deterministic duplicate disambiguation strategy was added:
 
 This restored uniqueness while preserving a deterministic, reproducible key.
 
-### Interview Talking Point
-
-> When the source lacks a stable line-level identifier, a DE must create a deterministic surrogate key.
-> I validated key uniqueness with dbt tests, detected collisions, and fixed them using a grain-aware
-> row_number-based disambiguation strategy.
-
 ---
 
 # Implementation Details

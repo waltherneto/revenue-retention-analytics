@@ -163,9 +163,3 @@ This step demonstrates:
 - Cost-aware warehouse query design
 - State-based dbt execution for faster CI/CD pipelines
 - Reduced compute cost during development workflows
-
----
-
-# Interview Talking Point
-
-To optimize warehouse cost and CI runtime, the project implements Snowflake clustering for time-based queries and dbt state-based builds to execute only modified models instead of rebuilding the entire DAG.

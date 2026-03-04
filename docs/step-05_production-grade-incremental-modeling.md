@@ -46,7 +46,7 @@ md5(concat_ws('|',
 )) as invoice_line_sk
 ```
 
-## Why this matters (Interview Talking Point)
+## Why this matters
 
 - Ensures deterministic idempotency  
 - Enables reliable MERGE operations  
@@ -99,14 +99,6 @@ it can become inefficient at large scale due to full table scans.
 2. Change detection using hash-diff columns
 3. Snowflake clustering strategy
 4. Micro-partition pruning optimization
-
-## Interview Talking Point
-
-If scaling to hundreds of millions of rows, 
-I would replace the `NOT IN` logic with a date-based window or staged merge pattern 
-to reduce scan cost and improve performance.
-
-This demonstrates awareness of warehouse cost control and scaling constraints.
 
 ---
 
