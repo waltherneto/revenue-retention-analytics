@@ -3,7 +3,7 @@
     materialized = 'incremental',
     incremental_strategy = 'merge',
     unique_key = 'invoice_line_sk',
-    on_schema_change = 'sync_all_columns'
+    on_schema_change = 'append_new_columns'
 ) }}
 
 with src as (

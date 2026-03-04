@@ -1,0 +1,119 @@
+version: 2
+
+models:
+  - name: fct_invoice_lines
+    description: >
+      Transactional fact table at invoice-line grain (incremental MERGE).
+      Deterministic surrogate key with grain-aware disambiguation.
+
+    config:
+      contract:
+        enforced: true
+      meta:
+        owner: "data-engineering"
+        data_domain: "finance"
+        criticality: "high"
+        pii: false
+        grain: "one row per invoice line"
+        slo: "CI-validated via dbt run/test; freshness monitored at source layer"
+
+    columns:
+      - name: invoice_line_sk
+        description: "Deterministic surrogate key (MD5) for invoice line, including duplicate disambiguation."
+        data_type: VARCHAR
+        tests: [not_null, unique]
+
+      - name: invoice_no
+        description: "Invoice identifier from the source system."
+        data_type: VARCHAR
+        tests:
+          - not_null
+
+      - name: invoice_date
+        description: "Invoice timestamp (UTC, TIMESTAMP_NTZ)."
+        data_type: TIMESTAMP_NTZ
+        tests:
+          - not_null
+
+      - name: customer_id
+        description: "Customer identifier (nullable for anonymous purchases)."
+        data_type: NUMBER
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_id
+              where: "customer_id is not null"
+
+      - name: stock_code
+        description: "Product stock code."
+        data_type: VARCHAR
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_product')
+                field: stock_code
+
+      - name: country
+        description: "Country of purchase."
+        data_type: VARCHAR
+
+      - name: quantity
+        description: "Quantity purchased (negative values represent returns)."
+        data_type: NUMBER
+
+      - name: unit_price
+        description: "Unit price."
+        data_type: NUMBER
+
+      - name: line_amount
+        description: "Line total amount (quantity * unit_price)."
+        data_type: NUMBER
+
+      - name: is_sale
+        description: "1 if sale row (quantity > 0), else 0."
+        data_type: NUMBER
+        tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+
+      - name: is_return
+        description: "1 if return row (quantity < 0), else 0."
+        data_type: NUMBER
+        tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+
+      - name: is_adjustment
+        description: "1 if accounting/system adjustment, else 0."
+        data_type: NUMBER
+        tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+
+      - name: sale_value
+        description: "Positive sales value excluding adjustments."
+        data_type: NUMBER
+
+      - name: return_value
+        description: "Positive returns value excluding adjustments."
+        data_type: NUMBER
+
+      - name: adjustment_value
+        description: "Adjustment value (kept for auditability and reconciliation)."
+        data_type: NUMBER
+
+    tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "unit_price >= 0"
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "quantity <> 0"
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "not (is_sale = 1 and is_return = 1)"

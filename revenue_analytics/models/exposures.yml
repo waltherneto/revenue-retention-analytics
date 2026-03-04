@@ -1,0 +1,29 @@
+version: 2
+
+exposures:
+  - name: revenue_monthly_kpi_dashboard
+    type: dashboard
+    maturity: medium
+    url: https://github.com/waltherneto/revenue-retention-analytics
+    description: >
+      Finance KPI dashboard (simulated) that tracks monthly gross revenue,
+      returns impact, net revenue, and operational net revenue.
+    owner:
+      name: Finance Analytics
+      email: finance@example.com
+    depends_on:
+      - ref('fct_revenue_monthly')
+
+  - name: reliability_controls_monitoring
+    type: analysis
+    maturity: medium
+    url: https://github.com/waltherneto/revenue-retention-analytics
+    description: >
+      Reliability controls (freshness, drift monitoring, and reconciliation)
+      used to validate pipeline health and financial consistency.
+    owner:
+      name: Data Engineering
+      email: data@example.com
+    depends_on:
+      - ref('obs_daily_volume_and_revenue')
+      - ref('obs_monthly_revenue_reconciliation')
