@@ -1,4 +1,4 @@
--- [DBT-S6-010]
+-- minor change for state-based execution demonstration
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'merge',

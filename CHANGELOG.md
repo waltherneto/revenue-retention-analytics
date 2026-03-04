@@ -1,67 +1,67 @@
 # Changelog
 
+## v0.10.0 — Performance & Cost Optimization
+
+Added:
+
+- Snowflake query performance analysis
+- Clustering strategy on fact table
+- Query Profile validation workflow
+- dbt state-based execution (state:modified+)
+- Cost-aware warehouse execution strategy
+
+---
+
 ## v0.9.0 — Environment Separation
 
-### Added
-- DEV and PROD Snowflake databases
-- Multi-target dbt configuration (dev/prod)
-- CI-aware target selection (PR → DEV, main → PROD)
-- Environment-specific GitHub Secrets
-
-### Notes
-- This upgrade transitions the project to production-aware deployment standards.
+- DEV / PROD Snowflake databases
+- CI-aware target selection
 
 ---
 
 ## v0.8.0 — CI/CD Automation
 
-- GitHub Actions workflow for dbt validation
-- Secure profiles.yml generation
-- Automated dbt debug/run/test
+- GitHub Actions pipeline for dbt
 
 ---
 
 ## v0.7.0 — Freshness & Observability
 
-- Source freshness configuration
+- Source freshness monitoring
 - Observability models
-- Revenue reconciliation checks
 
 ---
 
 ## v0.6.0 — Advanced Testing
 
-- Extended dbt test coverage
-- Custom assertion logic
+- dbt data quality tests
 
 ---
 
-## v0.5.0 — Incremental Modeling
+## v0.5.0 — Incremental Models
 
-- Production-style incremental fact model
+- Incremental fact processing
 
 ---
 
 ## v0.4.0 — Dimensional Modeling
 
-- Staging layer
-- Fact & dimension models
+- Fact and dimension tables
 
 ---
 
-## v0.3.0 — Staging Validation
+## v0.3.0 — Staging Layer
 
-- Data standardization and validation
+- Data normalization models
 
 ---
 
 ## v0.2.0 — Data Profiling
 
-- Revenue validation and customer coverage analysis
+- Dataset exploration
 
 ---
 
 ## v0.1.0 — Initial Setup
 
-- Snowflake account setup
-- RAW ingestion
+- Snowflake ingestion and raw schema
